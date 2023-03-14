@@ -168,3 +168,7 @@ input_files_used/*
 # Ignore the files in clipped_files
 clipped_files/*
 output_files/*
+
+
+# ignore the clipped_files_arcived
+clipped_files_archived/*

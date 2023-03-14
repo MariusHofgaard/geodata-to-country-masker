@@ -17,7 +17,7 @@ list_of_files_to_be_clipped = []
 accepted_file_types = ["shp", "geojson" , "gpkg", "tif", "asc"]
 
 # Define the country to be clipped to
-list_of_countries_to_be_clipped_to = ["POL"] # "ITA", "DEU", "SWE",
+list_of_countries_to_be_clipped_to = ["POL", "ITA", "DEU", "SWE"]
 
 
 for file in files_in_input_files:
@@ -33,6 +33,12 @@ for file_path in list_of_files_to_be_clipped:
     filetype = file_path.split(".")[-1]
 
     print("Clipping file: {file_path}".format(file_path=file_path))
+
+    # Check if the final file already exists, if it does, skip it
+    if os.path.exists("clipped_files/{country}/{file_name}".format(country=list_of_countries_to_be_clipped_to[0], file_name=file_path.split(".")[0])):
+        print("File already exists, skipping")
+        continue
+
     
     # If the filetype is a vector type
     if filetype in ["shp", "geojson", "gpkg"]:
@@ -103,12 +109,12 @@ for file_path in list_of_files_to_be_clipped:
 
 
                 # check if a path extists, if not create a folder
-                if not os.path.exists("clipped_files/{country}/{file_name}".format(country=country, file_name=file_path.split(".")[0])):
-                    os.makedirs("clipped_files/{country}/{file_name}".format(country=country,file_name=file_path.split(".")[0]))
+                if not os.path.exists("clipped_files/{file_name}/{country}".format(country=country, file_name=file_path.split(".")[0])):
+                    os.makedirs("clipped_files/{file_name}/{country}".format(country=country,file_name=file_path.split(".")[0]))
                 
 
                 # Save the out_image to a file 
-                with rasterio.open("clipped_files/{country}/{file_name}/{file_name}.tif".format(country=country,file_name=file_path.split(".")[0]), 'w', driver='GTiff', height=out_image.shape[1], width=out_image.shape[2], count=1, dtype=out_image.dtype, crs=gdf_bounds.crs, transform=transform_obj, nodata=src.nodata) as dst:
+                with rasterio.open("clipped_files/{file_name}/{country}/{file_name}.tif".format(country=country,file_name=file_path.split(".")[0]), 'w', driver='GTiff', height=out_image.shape[1], width=out_image.shape[2], count=1, dtype=out_image.dtype, crs=gdf_bounds.crs, transform=transform_obj, nodata=src.nodata) as dst:
                     dst.write(out_image)
 
 
